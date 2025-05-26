@@ -37,6 +37,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    buildFeatures{
+        dataBinding = true
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -67,6 +72,11 @@ dependencies {
 
     //kapt
     kapt ("androidx.hilt:hilt-compiler:1.2.0")
+
+
+    //navigation
+    implementation ("androidx.navigation:navigation-fragment:2.8.0")
+    implementation ("androidx.navigation:navigation-ui:2.8.0")
 
 
 }
