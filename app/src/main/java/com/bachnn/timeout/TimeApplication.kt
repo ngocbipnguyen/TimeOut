@@ -8,7 +8,7 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class TimeApplication : Application() {
 
-    private var packageManager: PackageManager? = null
+    var packageManager: PackageManager? = null
     override fun onCreate() {
         super.onCreate()
         packageManager = PackageManager(applicationContext)
