@@ -1,5 +1,12 @@
 package com.bachnn.timeout.data.model
 
-import android.graphics.drawable.Drawable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class AppInfo(val packageName: String, val label: String, val target: Int, val drawable: Drawable)
+@Entity
+data class AppInfo(
+    @PrimaryKey val packageName: String,
+    val label: String,
+    val target: Int,
+    val timestamp: Long = 0
+)

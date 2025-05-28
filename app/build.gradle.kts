@@ -78,5 +78,12 @@ dependencies {
     implementation ("androidx.navigation:navigation-fragment:2.8.0")
     implementation ("androidx.navigation:navigation-ui:2.8.0")
 
+    // room
+    val room_version = "2.5.2"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:$room_version")
+
 
 }
