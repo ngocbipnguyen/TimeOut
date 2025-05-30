@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.bachnn.timeout.TimeApplication
 import com.bachnn.timeout.base.BaseViewModel
 import com.bachnn.timeout.data.model.AppInfo
@@ -13,6 +14,7 @@ import com.bachnn.timeout.data.source.local.LocalDataSource
 import com.bachnn.timeout.manager.PackageManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,49 +25,57 @@ class HomeViewModel @Inject constructor(
     BaseViewModel() {
 
     private var packageManager: PackageManager? = null
-
-    private var _packageInfo = MutableLiveData<List<AppInfo>>()
+    private val _packageInfo = MutableLiveData<List<AppInfo>>()
     val packageInfo: LiveData<List<AppInfo>> = _packageInfo
 
     init {
         try {
             val timeApplication: TimeApplication = context.applicationContext as TimeApplication
-            timeApplication.packageManager
-            if (timeApplication.packageManager != null) {
-                packageManager = timeApplication.packageManager
-                packageManager?.let {
-                    val listPackage = ArrayList<AppInfo>()
-                    it.getPackageInfo().forEach { packageInfo ->
-                        val label: String? =
-                            context.packageManager.getApplicationLabel(packageInfo.applicationInfo!!)
-                                .toString()
-                        label?.let {
-                            if (!(label.contains("/") || label.contains("."))) {
-                                listPackage.add(
-                                    AppInfo(
-                                        packageInfo.packageName,
-                                        label,
-                                        packageInfo.applicationInfo!!.targetSdkVersion
-                                    )
-                                )
+            packageManager = timeApplication.packageManager
+            
+            viewModelScope.launch {
+                packageManager?.let { manager ->
+                    try {
+                        val listPackage = ArrayList<AppInfo>()
+                        manager.getPackageInfo().forEach { packageInfo ->
+                            try {
+                                val label: String? = context.packageManager
+                                    .getApplicationLabel(packageInfo.applicationInfo!!)
+                                    .toString()
+                                
+                                label?.let {
+                                    if (!(label.contains("/") || label.contains("."))) {
+                                        listPackage.add(
+                                            AppInfo(
+                                                packageInfo.packageName,
+                                                label,
+                                                packageInfo.applicationInfo!!.targetSdkVersion
+                                            )
+                                        )
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Log.e("HomeViewModel", "Error processing package: ${packageInfo.packageName}", e)
                             }
                         }
+                        _packageInfo.postValue(listPackage)
+                        localDataSource.insertAllAppInfo(listPackage)
+                    } catch (e: Exception) {
+                        Log.e("HomeViewModel", "Error processing packages", e)
+                        _packageInfo.postValue(emptyList())
                     }
-                    _packageInfo.postValue(listPackage)
-                    localDataSource.insertAllAppInfo(listPackage)
+                } ?: run {
+                    Log.e("HomeViewModel", "PackageManager is null")
+                    _packageInfo.postValue(emptyList())
                 }
             }
         } catch (e: Exception) {
-            Log.e("HomeViewModel", "Exception: ${e.toString()}")
+            Log.e("HomeViewModel", "Initialization error", e)
+            _packageInfo.postValue(emptyList())
         }
     }
 
     fun getAppInfo(): List<AppInfo> {
-        return if (_packageInfo.value == null) {
-            return ArrayList<AppInfo>()
-        } else {
-            _packageInfo.value!!
-        }
+        return _packageInfo.value ?: emptyList()
     }
-
 }

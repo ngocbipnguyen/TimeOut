@@ -9,4 +9,6 @@ data class AppInfo(
     val label: String,
     val target: Int,
     val timestamp: Long = 0
-)
+): java.io.Serializable {
+    fun getStrTarget() : String = target.toString()
+}
