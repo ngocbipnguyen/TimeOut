@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Time Out</string>
     <string name="title_home">Home\n</string>
+    <string name="app_running">TimeOut is running.</string>
+    <string name="channel_description">TimeOut\n</string>
+    <string name="channel_home_name">channel timeout name</string>
 </resources>

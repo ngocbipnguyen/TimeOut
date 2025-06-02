@@ -4,6 +4,12 @@
 
 
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
 
 
     <application
@@ -26,6 +32,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".service.TimeService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
