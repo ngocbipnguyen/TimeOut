@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "28015991801",
+    "project_id": "messenger-7c6e4",
+    "storage_bucket": "messenger-7c6e4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28015991801:android:8e017259081ac041b7bb28",
+        "android_client_info": {
+          "package_name": "com.bachnn.timeout"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28015991801-dfoicpdrkef9rta24r8j7i26vavtg7bk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCooIOS9rSqJm41IHnldkAWVhhDr-IMPNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28015991801-dfoicpdrkef9rta24r8j7i26vavtg7bk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

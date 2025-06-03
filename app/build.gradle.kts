@@ -5,6 +5,8 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("androidx.navigation.safeargs")
+    id("com.google.firebase.appdistribution")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -28,6 +30,28 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            firebaseAppDistribution {
+                appId = "1:28015991801:android:8e017259081ac041b7bb28"
+                serviceCredentialsFile = file("/Users/bachnn/Downloads/messenger-key.json").toString()
+                releaseNotes = "Version Release #1"
+                testers="bachn3682@gmail.com, bachnn@vnext.vn"
+            }
+        }
+
+        debug {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            firebaseAppDistribution {
+                appId = "1:28015991801:android:8e017259081ac041b7bb28"
+                releaseNotes = "Version Debug #1"
+                testers = "bachn3682@gmail.com, bachnn@vnext.vn"
+                serviceCredentialsFile = file("/Users/bachnn/Downloads/messenger-key.json").toString()
+            }
         }
     }
     compileOptions {

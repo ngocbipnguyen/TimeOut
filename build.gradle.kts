@@ -2,8 +2,9 @@
 
 buildscript {
     dependencies {
-        val nav_version = "2.8.0"
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version")
+        classpath("com.google.gms:google-services:4.4.2")
+        classpath("com.google.firebase:firebase-appdistribution-gradle:5.1.1")
+        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.8.2")
     }
 }
 
