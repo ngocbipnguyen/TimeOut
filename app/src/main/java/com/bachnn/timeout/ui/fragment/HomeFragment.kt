@@ -1,6 +1,11 @@
 package com.bachnn.timeout.ui.fragment
 
+import android.accessibilityservice.AccessibilityService
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +17,7 @@ import com.bachnn.timeout.R
 import com.bachnn.timeout.adapter.HomeAdapter
 import com.bachnn.timeout.base.BaseFragment
 import com.bachnn.timeout.databinding.HomeFragmentBinding
+import com.bachnn.timeout.service.AppLaunchDetectorService
 import com.bachnn.timeout.ui.viewModel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,5 +64,21 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
             adapter.submitList(it)
         })
 
+        if (!isAccessibilityServiceEnabled(requireContext(), AppLaunchDetectorService::class.java)) {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }
+
+
+    }
+
+    private fun isAccessibilityServiceEnabled(context: Context, service: Class<out AccessibilityService>): Boolean {
+        val expectedComponentName = ComponentName(context, service)
+        val enabledServices = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+
+        return enabledServices.split(":")
+            .any { it.equals(expectedComponentName.flattenToString(), ignoreCase = true) }
     }
 }

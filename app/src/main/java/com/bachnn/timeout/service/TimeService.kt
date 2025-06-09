@@ -6,10 +6,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.app.usage.UsageStatsManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ServiceInfo
-import android.inputmethodservice.InputMethodService
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -31,6 +32,23 @@ class TimeService : Service() {
     private var job: Job? = null
 
 
+    private var packageChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action
+            if (action != null) {
+                Log.e("TimeServiceTimeService", intent.action.toString())
+                if (action == Intent.ACTION_PACKAGE_ADDED) {
+                    // Handle package added
+                    val packageName = intent.data!!.schemeSpecificPart
+                    // Check if it's your target app
+                    if (packageName == "com.example.targetapp") {
+                        // Log or display message
+                    }
+                }
+            }
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -39,6 +57,12 @@ class TimeService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground()
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED)
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED)
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
+        registerReceiver(packageChangeReceiver, intentFilter)
         startLoopingFunction()
         return START_STICKY
     }
@@ -87,75 +111,18 @@ class TimeService : Service() {
         }
     }
 
-    fun showLog() {
-        try {
-            var mLogcatProc: Process? = null
-            var reader: BufferedReader? = null
-            mLogcatProc = Runtime.getRuntime().exec(arrayOf("logcat", "-d"))
-            reader = BufferedReader(InputStreamReader(mLogcatProc.inputStream))
-            var line: String?
-            val log = StringBuilder()
-            val separator = System.getProperty("line.separator")
-            while (reader.readLine().also { line = it } != null) {
-                log.append(line)
-                log.append(separator)
-            }
-            val w = log.toString()
-            Log.e("TimeServiceTimeService", w)
-        } catch (e: Exception) {
-            Log.e("TimeServiceTimeService", e.message.toString())
-        }
-    }
-
-
     private fun startLoopingFunction() {
-        val context: Context = this
         job = CoroutineScope(Dispatchers.IO).launch {
             while (isActive) {
-                openApp()
-//                val packageName: String? = getForegroundApp(context)!!
-//                Log.e("TimeServiceTimeService", "getForegroundApp $packageName")
                 delay(1000) // 5 seconds interval
             }
         }
     }
 
-    private fun openApp() {
-        val am: ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val runningAppProcessInfo: List<ActivityManager.RunningAppProcessInfo> =
-            am.runningAppProcesses;
-
-//        for (int i = 0; i < runningAppProcessInfo.size(); i++) {
-//            if(runningAppProcessInfo.get(i).processName.equals("com.the.app.you.are.looking.for") {
-//                    // Do you stuff
-//                }
-//        }
-//
-        runningAppProcessInfo.forEach { it ->
-            Log.e("TimeServiceTimeService", it.processName)
-        }
-    }
-
     override fun onDestroy() {
         job?.cancel()
+        unregisterReceiver(packageChangeReceiver)
         super.onDestroy()
     }
-
-
-    private fun getForegroundApp(context: Context): String? {
-        val usageStatsManager = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val time = System.currentTimeMillis()
-        val stats = usageStatsManager.queryUsageStats(
-            UsageStatsManager.INTERVAL_DAILY,
-            time - 1000 * 10,
-            time
-        )
-
-        if (stats.isNullOrEmpty()) return null
-
-        val recentStat = stats.maxByOrNull { it.lastTimeUsed }
-        return recentStat?.packageName
-    }
-
 
 }
