@@ -28,10 +28,16 @@ class HomeViewModel @Inject constructor(
     private val _packageInfo = MutableLiveData<List<AppInfo>>()
     val packageInfo: LiveData<List<AppInfo>> = _packageInfo
 
+    private var packageInfoSelected : ArrayList<AppInfo>? = null
+
     init {
         try {
             val timeApplication: TimeApplication = context.applicationContext as TimeApplication
             packageManager = timeApplication.packageManager
+
+            packageInfoSelected = ArrayList()
+            packageInfoSelected?.addAll(localDataSource.getAllAppInfo())
+//            loadSelectedPackages()
             
             viewModelScope.launch {
                 packageManager?.let { manager ->
@@ -58,8 +64,15 @@ class HomeViewModel @Inject constructor(
                                 Log.e("HomeViewModel", "Error processing package: ${packageInfo.packageName}", e)
                             }
                         }
+                        if (packageInfoSelected != null) {
+                            listPackage.forEach {
+                                if (isPackageSelected(it.packageName)) {
+                                    it.active = true
+                                }
+                            }
+                        }
                         _packageInfo.postValue(listPackage)
-                        localDataSource.insertAllAppInfo(listPackage)
+//                        localDataSource.insertAllAppInfo(listPackage)
                     } catch (e: Exception) {
                         Log.e("HomeViewModel", "Error processing packages", e)
                         _packageInfo.postValue(emptyList())
@@ -75,7 +88,49 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun loadSelectedPackages() {
+        if (packageInfoSelected == null) {
+            if (localDataSource.getAllAppInfo().isNotEmpty()) {
+                packageInfoSelected = ArrayList()
+                packageInfoSelected?.addAll(localDataSource.getAllAppInfo())
+            }
+        } else {
+            if (packageInfoSelected?.size != localDataSource.getAllAppInfo().size) {
+                updateSelectedPackages()
+            }
+        }
+    }
+
+    private fun updateSelectedPackages() {
+        val currentPackages = localDataSource.getAllAppInfo()
+        packageInfoSelected?.clear()
+        packageInfoSelected?.addAll(currentPackages)
+    }
+
+    private fun isPackageSelected(packageName: String): Boolean {
+        return packageInfoSelected?.any { it.packageName == packageName } ?: false
+    }
+
+    fun getSelectedPackages(): List<AppInfo> {
+        return packageInfoSelected?.toList() ?: emptyList()
+    }
+
     fun getAppInfo(): List<AppInfo> {
         return _packageInfo.value ?: emptyList()
+    }
+
+    fun updatePackageSelected(packageName: AppInfo, checked: Boolean) {
+        if (checked) {
+            packageName.active = checked
+            packageInfoSelected?.add(packageName)
+            localDataSource.insertAppInfo(packageName)
+        } else {
+            packageInfoSelected?.forEach { it ->
+                if (it.packageName == packageName.packageName) {
+                    packageInfoSelected?.remove(it)
+                    localDataSource.deleteAppInfoByPackageName(packageName.packageName)
+                }
+            }
+        }
     }
 }

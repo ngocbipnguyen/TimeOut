@@ -16,6 +16,8 @@ interface AppDataSource {
 
         fun getCount(): Int
 
+        fun deleteAppInfoByPackageName(packageName: String)
+
     }
 
 }

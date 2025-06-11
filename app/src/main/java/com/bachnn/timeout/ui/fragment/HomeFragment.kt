@@ -52,6 +52,8 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
                 },
                 navOptions
             )
+        }, clickBoxActive = {packageName, isChecked ->
+            viewModel.updatePackageSelected(packageName, isChecked)
         })
 
         binding.packageRecycle.adapter = adapter

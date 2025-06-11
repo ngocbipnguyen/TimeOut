@@ -28,4 +28,8 @@ class LocalDataSource @Inject constructor(private val appInfoDao: AppInfoDao) :
     override fun getCount(): Int {
         return appInfoDao.getCount()
     }
+
+    override fun deleteAppInfoByPackageName(packageName: String) {
+        appInfoDao.deleteAppInfoByPackageName(packageName)
+    }
 }

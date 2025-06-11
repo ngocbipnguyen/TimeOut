@@ -24,4 +24,7 @@ interface AppInfoDao {
     @Query("SELECT COUNT(packageName) FROM AppInfo")
     fun getCount(): Int
 
+    @Query("DELETE FROM AppInfo WHERE packageName = :packageName")
+    fun deleteAppInfoByPackageName(packageName: String)
+
 }
