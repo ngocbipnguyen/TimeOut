@@ -6,10 +6,10 @@ import android.os.Build
 import android.widget.Toast
 import com.bachnn.timeout.manager.PackageManager
 import com.bachnn.timeout.service.TimeService
+import com.bachnn.timeout.worker.DailyResetWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.io.BufferedReader
 import java.io.InputStreamReader
-
 
 @HiltAndroidApp
 class TimeApplication : Application() {
@@ -27,5 +27,9 @@ class TimeApplication : Application() {
 //            startService(intent)
 //        }
 
+        // Schedule daily reset
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            DailyResetWorker.scheduleDailyReset(this)
+        }
     }
 }
