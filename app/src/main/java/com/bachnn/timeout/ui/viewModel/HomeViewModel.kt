@@ -1,9 +1,7 @@
 package com.bachnn.timeout.ui.viewModel
 
 import android.content.Context
-import android.content.pm.PackageInfo
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -65,14 +63,16 @@ class HomeViewModel @Inject constructor(
                             }
                         }
                         if (packageInfoSelected != null) {
-                            listPackage.forEach {
-                                if (isPackageSelected(it.packageName)) {
-                                    it.active = true
+                            listPackage.forEach { appInfo ->
+                                packageInfoSelected?.find { selected -> 
+                                    selected.packageName == appInfo.packageName 
+                                }?.let { selected ->
+                                    appInfo.active = true
+                                    appInfo.timestamp = selected.timestamp
                                 }
                             }
                         }
                         _packageInfo.postValue(listPackage)
-//                        localDataSource.insertAllAppInfo(listPackage)
                     } catch (e: Exception) {
                         Log.e("HomeViewModel", "Error processing packages", e)
                         _packageInfo.postValue(emptyList())
@@ -124,11 +124,17 @@ class HomeViewModel @Inject constructor(
             packageName.active = checked
             packageInfoSelected?.add(packageName)
             localDataSource.insertAppInfo(packageName)
+            Log.e("HomeViewModel", "AppInfo $packageName")
         } else {
-            packageInfoSelected?.forEach { it ->
-                if (it.packageName == packageName.packageName) {
-                    packageInfoSelected?.remove(it)
-                    localDataSource.deleteAppInfoByPackageName(packageName.packageName)
+            packageInfoSelected?.let { selectedList ->
+                val iterator = selectedList.iterator()
+                while (iterator.hasNext()) {
+                    val selected = iterator.next()
+                    if (selected.packageName == packageName.packageName) {
+                        iterator.remove()
+                        localDataSource.deleteAppInfoByPackageName(packageName.packageName)
+                        break
+                    }
                 }
             }
         }
