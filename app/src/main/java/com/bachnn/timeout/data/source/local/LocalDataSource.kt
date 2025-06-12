@@ -25,6 +25,10 @@ class LocalDataSource @Inject constructor(private val appInfoDao: AppInfoDao) :
         appInfoDao.updateTimestamp(pkg, newTimestamp)
     }
 
+    override fun getTimestampByPackageName(packageName: String): Long? {
+        return appInfoDao.getTimestampByPackageName(packageName)
+    }
+
     override fun getCount(): Int {
         return appInfoDao.getCount()
     }

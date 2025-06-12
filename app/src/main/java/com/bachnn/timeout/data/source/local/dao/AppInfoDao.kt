@@ -21,6 +21,9 @@ interface AppInfoDao {
     @Query("UPDATE AppInfo SET timestamp = :newTimestamp WHERE packageName = :pkg")
     fun updateTimestamp(pkg: String, newTimestamp: Long)
 
+    @Query("SELECT timestamp FROM AppInfo WHERE packageName = :packageName")
+    fun getTimestampByPackageName(packageName: String): Long?
+
     @Query("SELECT COUNT(packageName) FROM AppInfo")
     fun getCount(): Int
 

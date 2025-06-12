@@ -20,12 +20,12 @@ class TimeApplication : Application() {
         packageManager = PackageManager(applicationContext)
 
 
-        val intent = Intent(this, TimeService::class.java) // Build the intent for the service
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
+//        val intent = Intent(this, TimeService::class.java) // Build the intent for the service
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(intent)
+//        } else {
+//            startService(intent)
+//        }
 
     }
 }

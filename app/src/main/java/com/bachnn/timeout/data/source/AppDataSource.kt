@@ -14,6 +14,8 @@ interface AppDataSource {
 
         fun updateTimestamp(pkg: String, newTimestamp: Long)
 
+        fun getTimestampByPackageName(packageName: String): Long?
+
         fun getCount(): Int
 
         fun deleteAppInfoByPackageName(packageName: String)
