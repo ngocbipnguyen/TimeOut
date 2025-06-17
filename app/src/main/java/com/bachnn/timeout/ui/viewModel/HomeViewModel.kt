@@ -12,6 +12,11 @@ import com.bachnn.timeout.data.source.local.LocalDataSource
 import com.bachnn.timeout.manager.PackageManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +33,8 @@ class HomeViewModel @Inject constructor(
 
     private var packageInfoSelected : ArrayList<AppInfo>? = null
 
+    private var job: Job? = null
+
     init {
         try {
             val timeApplication: TimeApplication = context.applicationContext as TimeApplication
@@ -41,6 +48,7 @@ class HomeViewModel @Inject constructor(
                 packageManager?.let { manager ->
                     try {
                         val listPackage = ArrayList<AppInfo>()
+                        var listSortByTime: List<AppInfo> ? = null
                         manager.getPackageInfo().forEach { packageInfo ->
                             try {
                                 val label: String? = context.packageManager
@@ -71,8 +79,14 @@ class HomeViewModel @Inject constructor(
                                     appInfo.timestamp = selected.timestamp
                                 }
                             }
+                            val listSortByTrue = listPackage.sortedByDescending { it.active }
+                            listSortByTime = listSortByTrue.sortedByDescending { it.timestamp }
                         }
-                        _packageInfo.postValue(listPackage)
+                        if (listSortByTime != null) {
+                            _packageInfo.postValue(listSortByTime!!)
+                        } else {
+                            _packageInfo.postValue(listPackage)
+                        }
                     } catch (e: Exception) {
                         Log.e("HomeViewModel", "Error processing packages", e)
                         _packageInfo.postValue(emptyList())
@@ -138,5 +152,60 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun startLoopingFunction() {
+        job?.cancel() // Cancel any existing job
+        job = CoroutineScope(Dispatchers.IO).launch {
+            while (isActive) {
+                delay(3000) // Update every second for more responsive UI
+                refreshAppInfoList()
+            }
+        }
+    }
+
+    private fun refreshAppInfoList() {
+        try {
+            viewModelScope.launch {
+                try {
+                    // Get fresh data from database
+                    val freshData = localDataSource.getAllAppInfo()
+                    packageInfoSelected?.clear()
+                    packageInfoSelected?.addAll(freshData)
+
+                    // Update current list with new timestamps
+                    val currentList = _packageInfo.value?.toMutableList() ?: return@launch
+
+                    val updateList: ArrayList<AppInfo> = ArrayList()
+                    currentList.forEach { appInfo ->
+                        packageInfoSelected?.find { selected ->
+                            selected.packageName == appInfo.packageName
+                        }?.let { selected ->
+                            if (appInfo.timestamp != selected.timestamp) {
+                                updateList.add(selected)
+                                appInfo.timestamp = selected.timestamp
+                            }
+                            appInfo.active = true
+                        }
+                    }
+
+                    // Only sort and update if there were changes
+                    val sortedList = currentList
+                        .sortedByDescending { it.active }
+                        .sortedByDescending { it.timestamp }
+                    _packageInfo.postValue(sortedList)
+
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Error refreshing app info list", e)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("HomeViewModel", "Error in refreshAppInfoList", e)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        job?.cancel()
     }
 }

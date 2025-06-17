@@ -70,6 +70,7 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
 
+        viewModel.startLoopingFunction()
 
     }
 

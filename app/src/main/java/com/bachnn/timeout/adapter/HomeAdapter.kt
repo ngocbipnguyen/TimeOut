@@ -20,13 +20,14 @@ class HomeAdapter(private val clickListener: (AppInfo) -> Unit, private val clic
 
     class ViewHolder(private val binding: AppInfoItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(appInfo: AppInfo, clickListener: (AppInfo) -> Unit,clickBoxActive:(AppInfo, Boolean) -> Unit) {
+        fun bind(appInfo: AppInfo, clickListener: (AppInfo) -> Unit, clickBoxActive: (AppInfo, Boolean) -> Unit) {
             val drawable =
                 binding.root.context.packageManager.getApplicationIcon(appInfo.packageName)
             binding.appInfoIcon.setImageDrawable(drawable)
             binding.nameApp.text = appInfo.label
             binding.packageApp.text = appInfo.packageName
-            binding.timeUsed.text = appInfo.timestamp.toString()
+            binding.timeUsed.text = appInfo.formatTimestamp()
+            // Remove previous listener to avoid multiple callbacks
             binding.activeBox.isChecked = appInfo.active
             binding.appFrame.setOnClickListener {
                 clickListener(appInfo)
@@ -48,4 +49,32 @@ class HomeAdapter(private val clickListener: (AppInfo) -> Unit, private val clic
         holder.bind(getItem(position), clickListener, clickBoxActive)
     }
 
+    fun updateTimestamp(packageName: String, newTimestamp: Long) {
+        val currentList = currentList.toMutableList()
+        val index = currentList.indexOfFirst { it.packageName == packageName }
+        if (index != -1) {
+            currentList[index] = currentList[index].copy(timestamp = newTimestamp)
+            submitList(currentList)
+        }
+    }
+
+    fun updateItem(updatedAppInfo: AppInfo) {
+        val currentList = currentList.toMutableList()
+        val index = currentList.indexOfFirst { it.packageName == updatedAppInfo.packageName }
+        if (index != -1) {
+            currentList[index] = updatedAppInfo
+            submitList(currentList)
+        }
+    }
+
+    fun updateItems(updatedAppInfos: List<AppInfo>) {
+        val currentList = currentList.toMutableList()
+        updatedAppInfos.forEach { updatedAppInfo ->
+            val index = currentList.indexOfFirst { it.packageName == updatedAppInfo.packageName }
+            if (index != -1) {
+                currentList[index] = updatedAppInfo
+            }
+        }
+        submitList(currentList)
+    }
 }

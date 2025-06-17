@@ -17,4 +17,31 @@ data class AppInfo(
     }
 
 
+    fun formatTimestamp() : String {
+        if (timestamp.toInt() == 0) {
+            return "00:00:00"
+        }
+        val seconds = (timestamp / 1000) % 60
+        val minutes = (timestamp / 1000 / 60) % 60
+        val hour = (timestamp / 1000 / 60) / 60
+        val strSecond =  if (seconds >= 10) {
+            seconds.toString()
+        } else {
+            "0${seconds}"
+        }
+
+        val strMinutes =  if (minutes >= 10) {
+            minutes.toString()
+        } else {
+            "0${minutes}"
+        }
+
+        val strHour =  if (hour >= 10) {
+            hour.toString()
+        } else {
+            "0${hour}"
+        }
+        return "$strHour:$strMinutes:$strSecond"
+    }
+
 }
