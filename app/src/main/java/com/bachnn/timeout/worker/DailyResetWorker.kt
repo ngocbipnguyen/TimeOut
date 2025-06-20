@@ -6,11 +6,15 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.bachnn.timeout.data.source.local.LocalDataSource
+import com.bachnn.timeout.utilities.RESET_DB_TAG
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.Calendar
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -67,16 +71,44 @@ class DailyResetWorker @AssistedInject constructor(
                 java.time.Duration.ofDays(1)
             )
             .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                .addTag(RESET_DB_TAG)
             .build()
 
             // Enqueue the work request
-            workManager.enqueueUniquePeriodicWork(
-                "daily_reset_work",
-                androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+            workManager.enqueue(
                 dailyResetRequest
             )
             
             Log.d("DailyResetWorker", "Scheduled next reset at: ${calendar.time}")
         }
+
+
+        fun cancelResetTokenSchedule(context: Context?) {
+            WorkManager.getInstance(context!!)
+                .cancelAllWorkByTag(RESET_DB_TAG)
+        }
+
+        fun isWorkManagerRunning(context: Context?): Boolean {
+            val instance = WorkManager.getInstance(context!!)
+            val statuses = instance.getWorkInfosByTag(RESET_DB_TAG)
+            return try {
+                var running = false
+                val workInfoList = statuses.get()
+
+                for (workInfo in workInfoList) {
+                    val state = workInfo.state
+                    running =
+                        (state == WorkInfo.State.RUNNING) or (state == WorkInfo.State.ENQUEUED)
+                }
+                running
+            } catch (e: ExecutionException) {
+                e.printStackTrace()
+                false
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+                false
+            }
+        }
+
     }
 } 
