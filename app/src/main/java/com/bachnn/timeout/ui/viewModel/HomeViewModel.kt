@@ -42,6 +42,7 @@ class HomeViewModel @Inject constructor(
 
             packageInfoSelected = ArrayList()
             packageInfoSelected?.addAll(localDataSource.getAllAppInfo())
+            Log.e("packageInfoSelected", "packageInfoSelected ${packageInfoSelected!!.size}")
 //            loadSelectedPackages()
             
             viewModelScope.launch {
@@ -71,12 +72,12 @@ class HomeViewModel @Inject constructor(
                             }
                         }
                         if (packageInfoSelected != null) {
-                            listPackage.forEach { appInfo ->
-                                packageInfoSelected?.find { selected -> 
-                                    selected.packageName == appInfo.packageName 
-                                }?.let { selected ->
-                                    appInfo.active = true
-                                    appInfo.timestamp = selected.timestamp
+                            packageInfoSelected?.forEach {selected ->
+                                listPackage.forEach {
+                                    if (it.packageName == selected.packageName) {
+                                        it.active = true
+                                        it.timestamp = selected.timestamp
+                                    }
                                 }
                             }
                             val listSortByTrue = listPackage.sortedByDescending { it.active }
@@ -102,53 +103,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun loadSelectedPackages() {
-        if (packageInfoSelected == null) {
-            if (localDataSource.getAllAppInfo().isNotEmpty()) {
-                packageInfoSelected = ArrayList()
-                packageInfoSelected?.addAll(localDataSource.getAllAppInfo())
-            }
-        } else {
-            if (packageInfoSelected?.size != localDataSource.getAllAppInfo().size) {
-                updateSelectedPackages()
-            }
-        }
-    }
-
-    private fun updateSelectedPackages() {
-        val currentPackages = localDataSource.getAllAppInfo()
-        packageInfoSelected?.clear()
-        packageInfoSelected?.addAll(currentPackages)
-    }
-
-    private fun isPackageSelected(packageName: String): Boolean {
-        return packageInfoSelected?.any { it.packageName == packageName } ?: false
-    }
-
-    fun getSelectedPackages(): List<AppInfo> {
-        return packageInfoSelected?.toList() ?: emptyList()
-    }
-
-    fun getAppInfo(): List<AppInfo> {
-        return _packageInfo.value ?: emptyList()
-    }
-
     fun updatePackageSelected(packageName: AppInfo, checked: Boolean) {
         if (checked) {
             packageName.active = checked
             packageInfoSelected?.add(packageName)
             localDataSource.insertAppInfo(packageName)
-            Log.e("HomeViewModel", "AppInfo $packageName")
+            Log.e("HomeViewModel", "updatePackageSelected AppInfo $packageName")
         } else {
-            packageInfoSelected?.let { selectedList ->
-                val iterator = selectedList.iterator()
-                while (iterator.hasNext()) {
-                    val selected = iterator.next()
-                    if (selected.packageName == packageName.packageName) {
-                        iterator.remove()
-                        localDataSource.deleteAppInfoByPackageName(packageName.packageName)
-                        break
-                    }
+            Log.e("HomeViewModel", "---updatePackageSelected AppInfo $packageName")
+            packageInfoSelected?.forEachIndexed { index, appInfo ->
+                if (appInfo.packageName == packageName.packageName) {
+                    packageInfoSelected?.removeAt(index)
+                    localDataSource.deleteAppInfoByPackageName(packageName.packageName)
                 }
             }
         }
@@ -172,28 +138,29 @@ class HomeViewModel @Inject constructor(
                     val freshData = localDataSource.getAllAppInfo()
                     packageInfoSelected?.clear()
                     packageInfoSelected?.addAll(freshData)
+                    Log.e("packageInfoSelected", "refreshAppInfoList ${packageInfoSelected!!.size}")
+
 
                     // Update current list with new timestamps
-                    val currentList = _packageInfo.value?.toMutableList() ?: return@launch
+                    val currentList = _packageInfo.value
 
-                    val updateList: ArrayList<AppInfo> = ArrayList()
-                    currentList.forEach { appInfo ->
-                        packageInfoSelected?.find { selected ->
-                            selected.packageName == appInfo.packageName
-                        }?.let { selected ->
-                            if (appInfo.timestamp != selected.timestamp) {
-                                updateList.add(selected)
-                                appInfo.timestamp = selected.timestamp
+                    packageInfoSelected?.forEach { selected ->
+                        currentList?.forEach {
+                            if (it.packageName == selected.packageName) {
+                                Log.e("packageInfoSelected", "${it.packageName} == ${selected.packageName}")
+                                it.active = true
+                                if (it.timestamp != selected.timestamp) {
+                                    it.timestamp = selected.timestamp
+                                }
                             }
-                            appInfo.active = true
                         }
                     }
 
                     // Only sort and update if there were changes
                     val sortedList = currentList
-                        .sortedByDescending { it.active }
-                        .sortedByDescending { it.timestamp }
-                    _packageInfo.postValue(sortedList)
+                        ?.sortedByDescending { it.active }
+                        ?.sortedByDescending { it.timestamp }
+                    _packageInfo.postValue(sortedList!!)
 
                 } catch (e: Exception) {
                     Log.e("HomeViewModel", "Error refreshing app info list", e)

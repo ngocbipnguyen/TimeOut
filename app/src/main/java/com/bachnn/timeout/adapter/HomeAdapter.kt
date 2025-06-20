@@ -33,10 +33,10 @@ class HomeAdapter(private val clickListener: (AppInfo) -> Unit, private val clic
                 clickListener(appInfo)
             }
 
-            binding.activeBox.setOnCheckedChangeListener { _, isChecked ->
-                clickBoxActive(appInfo, isChecked)
-            }
+            binding.activeBox.setOnClickListener{
+                clickBoxActive(appInfo, !appInfo.active)
 
+            }
         }
     }
 
