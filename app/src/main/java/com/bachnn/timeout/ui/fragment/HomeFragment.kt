@@ -1,14 +1,19 @@
 package com.bachnn.timeout.ui.fragment
 
+import android.Manifest
 import android.accessibilityservice.AccessibilityService
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
@@ -17,6 +22,7 @@ import com.bachnn.timeout.R
 import com.bachnn.timeout.adapter.HomeAdapter
 import com.bachnn.timeout.base.BaseFragment
 import com.bachnn.timeout.databinding.HomeFragmentBinding
+import com.bachnn.timeout.notification.PushNotification
 import com.bachnn.timeout.service.AppLaunchDetectorService
 import com.bachnn.timeout.ui.viewModel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +32,9 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
 
     lateinit var adapter: HomeAdapter
 
+    private val notificationPermissionLaunch = registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
+
+    }
     override fun createViewModel(): HomeViewModel {
         return ViewModelProvider(this)[HomeViewModel::class.java]
     }
@@ -38,6 +47,16 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
     }
 
     override fun initView() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_DENIED
+            ) {
+                notificationPermissionLaunch.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
 
         adapter = HomeAdapter(clickListener = {
             val navController = binding.root.findNavController()
@@ -71,6 +90,8 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
         }
 
         viewModel.startLoopingFunction()
+
+        PushNotification.createNotificationChannel(requireContext())
 
     }
 

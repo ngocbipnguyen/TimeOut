@@ -4,4 +4,9 @@
     <string name="app_running">TimeOut is running.</string>
     <string name="channel_description">TimeOut\n</string>
     <string name="channel_home_name">channel timeout name</string>
+    <string name="channel_name">Alert Notification.</string>
+
+    <string name="used_two_hours">You have used this app for 2 hours</string>
+    <string name="used_two_hours_30_minutes">You have used this app for 2 and a half hours</string>
+    <string name="used_three_hours">You have used this app for 3 hours</string>
 </resources>
