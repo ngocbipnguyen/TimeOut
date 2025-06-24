@@ -9,4 +9,6 @@
     <string name="used_two_hours">You have used this app for 2 hours</string>
     <string name="used_two_hours_30_minutes">You have used this app for 2 and a half hours</string>
     <string name="used_three_hours">You have used this app for 3 hours</string>
+    <string name="kill_and_disable">Kill</string>
+    <string name="disable_app">Disable</string>
 </resources>

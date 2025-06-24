@@ -110,17 +110,17 @@ class AppLaunchDetectorService : AccessibilityService() {
 
                     if (SharedPreferenceUnit.getInt(this,COUNT_TIME, NOTHING_NOTIFICATION) == SECOND_NOTIFICATION) {
                         SharedPreferenceUnit.setInt(this,COUNT_TIME, END_NOTIFICATION)
-                        PushNotification.showNotification(this, getString(R.string.used_three_hours))
+                        PushNotification.showNotification(this, getString(R.string.used_three_hours), packageNameRunning!!, true)
                     }
                 } else if (timestamp > TWO_HOURS_30_MINUTES) {
                     if (SharedPreferenceUnit.getInt(this,COUNT_TIME, NOTHING_NOTIFICATION) == FIRST_NOTIFICATION) {
                         SharedPreferenceUnit.setInt(this,COUNT_TIME, SECOND_NOTIFICATION)
-                        PushNotification.showNotification(this, getString(R.string.used_two_hours_30_minutes))
+                        PushNotification.showNotification(this, getString(R.string.used_two_hours_30_minutes),packageNameRunning!!, false)
                     }
                 } else if (timestamp > TWO_HOURS) {
                     if (SharedPreferenceUnit.getInt(this,COUNT_TIME, NOTHING_NOTIFICATION) == NOTHING_NOTIFICATION) {
                         SharedPreferenceUnit.setInt(this,COUNT_TIME, FIRST_NOTIFICATION)
-                        PushNotification.showNotification(this, getString(R.string.used_two_hours))
+                        PushNotification.showNotification(this, getString(R.string.used_two_hours),packageNameRunning!!, false)
                     }
                 } else {
                     if (SharedPreferenceUnit.getInt(this,COUNT_TIME, NOTHING_NOTIFICATION) != NOTHING_NOTIFICATION) {

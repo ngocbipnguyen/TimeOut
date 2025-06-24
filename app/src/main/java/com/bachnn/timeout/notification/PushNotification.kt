@@ -2,13 +2,17 @@ package com.bachnn.timeout.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.navigation.NavDeepLinkBuilder
 import com.bachnn.timeout.R
+import com.bachnn.timeout.broadcast.RuntimeReceiver
 import com.bachnn.timeout.utilities.ALERT_NOTIFICATION
 import com.bachnn.timeout.utilities.CHANNEL_ID
 
@@ -30,7 +34,7 @@ class PushNotification {
         }
 
 
-        fun showNotification(context: Context, message: String) {
+        fun showNotification(context: Context, message: String, packageName: String, isShowButton: Boolean) {
 
 //            val bundle = Bundle()
 //            bundle.putSerializable("user_notification",user)
@@ -43,21 +47,61 @@ class PushNotification {
 //                .createPendingIntent()
 //
 
-//            val pendingIntent = NavDeepLinkBuilder(context)
-//                .setGraph(R.navigation.main_nav_graph)
-//                .addDestination(R.id.messengerFragment)
+            val pendingIntent = NavDeepLinkBuilder(context)
+                .setGraph(R.navigation.main_nav_graph)
+                .addDestination(R.id.informationFragment)
 //                .setArguments(Bundle().apply {
 //                    putSerializable("userArg", user)
 //                })
-//                .createPendingIntent()
-
+                .createPendingIntent()
             var builder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(message)
-//                .setContentIntent(pendingIntent)
+                .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)
+
+
+            if (isShowButton) {
+
+                val killAndDisable = Intent(context, RuntimeReceiver::class.java).apply {
+                    action = RuntimeReceiver.KILL_AND_DISABLE
+                    putExtra(RuntimeReceiver.PACKAGE_NAME, packageName)
+                }
+
+                val killAndDisablePendingIntent: PendingIntent =
+                    PendingIntent.getBroadcast(
+                        context,
+                        0,
+                        killAndDisable,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+
+                val clearNotification = Intent(context, RuntimeReceiver::class.java).apply {
+                    action = RuntimeReceiver.DISABLE_APP
+                    putExtra(RuntimeReceiver.PACKAGE_NAME, packageName)
+                }
+
+                val clearNotificationPendingIntent: PendingIntent =
+                    PendingIntent.getBroadcast(
+                        context,
+                        0,
+                        clearNotification,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+
+                builder.addAction(
+                    R.drawable.outline_disabled_visible_24,
+                    context.getString(R.string.kill_and_disable),
+                    killAndDisablePendingIntent
+                )
+                builder.addAction(
+                    R.drawable.baseline_close_24,
+                    context.getString(R.string.disable_app),
+                    clearNotificationPendingIntent
+                )
+            }
 
             with(NotificationManagerCompat.from(context)) {
                 if (ActivityCompat.checkSelfPermission(
