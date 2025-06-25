@@ -1,6 +1,7 @@
 package com.bachnn.timeout.ui.viewModel
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -55,14 +56,18 @@ class HomeViewModel @Inject constructor(
                                 val label: String? = context.packageManager
                                     .getApplicationLabel(packageInfo.applicationInfo!!)
                                     .toString()
-                                
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                    Log.e("packageInfoSelected", "packageInfo : ${packageInfo.versionName}")
+                                }
                                 label?.let {
                                     if (!(label.contains("/") || label.contains("."))) {
                                         listPackage.add(
                                             AppInfo(
                                                 packageInfo.packageName,
                                                 label,
-                                                packageInfo.applicationInfo!!.targetSdkVersion
+                                                packageInfo.applicationInfo!!.targetSdkVersion,
+                                                packageInfo.versionName.toString()
                                             )
                                         )
                                     }

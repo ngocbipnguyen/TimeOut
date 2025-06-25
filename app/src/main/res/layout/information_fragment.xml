@@ -7,12 +7,38 @@
             type="com.bachnn.timeout.ui.viewModel.InformationViewModel" />
     </data>
 
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="8dp">
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@string/title_home"
+                app:navigationIcon="@drawable/baseline_menu_24"
+                />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
 
         <androidx.cardview.widget.CardView
@@ -21,17 +47,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            app:cardCornerRadius="12dp"
+            android:layout_marginStart="8dp"
+            app:cardCornerRadius="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/app_bar">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:padding="16sp">
+                android:padding="24dp">
 
                 <ImageView
                     android:id="@+id/app_icon"
@@ -39,17 +66,6 @@
                     android:layout_height="100dp"
                     imageDrawable="@{infoViewModel.appInfo.packageName}"
                     android:layout_marginBottom="8dp" />
-
-
-                <TextView
-                    android:id="@+id/app_version"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center"
-                    android:text="@{infoViewModel.appInfo.strTarget}"
-                    android:textSize="12sp"
-                    tools:text="12.00000"/>
 
                 <TextView
                     android:id="@+id/app_text"
@@ -67,9 +83,11 @@
 
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/action_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:cardCornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -80,7 +98,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:padding="8dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:weightSum="3">
 
                 <LinearLayout
@@ -94,8 +113,8 @@
                     android:padding="4dp">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_marginBottom="4dp"
                         android:src="@drawable/baseline_folder_open_24" />
 
@@ -117,8 +136,8 @@
                     android:padding="4dp">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_marginBottom="4dp"
                         android:src="@drawable/baseline_clear_24" />
 
@@ -140,8 +159,8 @@
                     android:padding="4dp">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:layout_marginBottom="4dp"
                         android:src="@drawable/outline_block_24" />
 
@@ -157,6 +176,225 @@
         </androidx.cardview.widget.CardView>
 
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/active_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/action_settings"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="12dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/active_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_active"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statue_active_app"
+                    android:textSize="20sp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    tools:text="Active"
+                    android:text='@{infoViewModel.appInfo.active ? "Active": "Inactive"}'
+                    />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/time_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/active_card"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="12dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/time_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/total_time"
+                    android:textSize="20sp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    android:text="@{infoViewModel.appInfo.formatTimestamp()}"
+                    tools:text="00:01:10"
+                    />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/enable_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/time_card"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="12dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/enable_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/enable_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_is_enable"
+                    android:textSize="20sp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    tools:text="Enable"
+                    android:text='@{infoViewModel.isAppEnabled() ? "Enable": "Disable"}'
+                    />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/notification_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/enable_card"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="12dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/notification_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:onClick="@{() -> infoViewModel.notificationClick()}"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/notification_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notification"
+                    android:textSize="20sp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="12dp"
+                    android:textStyle="bold"
+                    tools:text="On"
+                    android:text='@{infoViewModel.notificationsEnabled() ? "On": "Off"}'
+                    />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+
+        <FrameLayout
+            android:id="@+id/divide_line"
+            app:layout_constraintTop_toBottomOf="@+id/notification_card"
+            android:layout_marginTop="12dp"
+            android:background="@color/md_theme_primary"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/divide_line"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{infoViewModel.getVersion()}"
+                    tools:text="Version: 1.2.3"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="12dp"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="13sp"
+                    android:textStyle="bold"
+                    android:text="@{infoViewModel.appInfo.packageName"
+                    tools:text="com.google.android.youtube"
+                    />
+
+            </LinearLayout>
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </layout>

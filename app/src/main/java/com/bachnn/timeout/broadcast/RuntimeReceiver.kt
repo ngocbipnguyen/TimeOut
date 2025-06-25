@@ -13,6 +13,7 @@ class RuntimeReceiver : BroadcastReceiver() {
         const val ENABLE_APP = "enable_app"
         const val PACKAGE_NAME = "package_name"
         const val OPEN_APP = "open_app"
+        const val UNINSTALL_APP = "uninstall_app"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -38,6 +39,12 @@ class RuntimeReceiver : BroadcastReceiver() {
                     val packageName: String? = intent.getStringExtra(PACKAGE_NAME)
                     if (packageName != null) {
                         openAppByCommand(packageName)
+                    }
+                }
+                UNINSTALL_APP -> {
+                    val packageName: String? = intent.getStringExtra(PACKAGE_NAME)
+                    if (packageName != null) {
+                        uninstallApp(packageName)
                     }
                 }
                 else -> {
@@ -86,5 +93,14 @@ class RuntimeReceiver : BroadcastReceiver() {
             "Error running command"
         }
     }
+
+    private fun uninstallApp(packageName: String) {
+        try {
+            Runtime.getRuntime().exec(arrayOf("su", "-c", "pm uninstall $packageName"))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
 }

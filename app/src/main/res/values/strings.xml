@@ -11,4 +11,12 @@
     <string name="used_three_hours">You have used this app for 3 hours</string>
     <string name="kill_and_disable">Kill</string>
     <string name="disable_app">Disable</string>
+    <string name="statue_active_app">This app is active.</string>
+    <string name="total_time">Total time spent on this app.</string>
+    <string name="app_is_enable">This app is enable.</string>
+    <string name="notification">Notification</string>
+    <string name="version">Version</string>
+    <string name="title_notification_info">Enable Settings</string>
+    <string name="disable_message_app">Do you want to disable this app?</string>
+    <string name="enable_message_app">Do you want to enable this app?</string>
 </resources>

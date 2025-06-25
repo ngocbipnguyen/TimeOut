@@ -61,10 +61,17 @@
         </provider>
 
 
-        <receiver android:name=".broadcast.RuntimeReceiver"
-            android:exported="false"
-            />
-
+        <receiver
+            android:name=".broadcast.RuntimeReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="kill_and_disable" />
+                <action android:name="disable_app" />
+                <action android:name="enable_app" />
+                <action android:name="open_app" />
+                <action android:name="uninstall_app" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@ data class AppInfo(
     @PrimaryKey val packageName: String,
     val label: String,
     val target: Int,
+    val versionName: String,
     var timestamp: Long = 0,
     var active: Boolean = false
 ): java.io.Serializable {
