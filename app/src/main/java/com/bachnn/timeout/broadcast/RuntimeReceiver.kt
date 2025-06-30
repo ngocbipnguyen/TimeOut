@@ -3,7 +3,9 @@ package com.bachnn.timeout.broadcast
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
+import java.io.File
 
 class RuntimeReceiver : BroadcastReceiver() {
 
@@ -17,6 +19,7 @@ class RuntimeReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
+        Log.e("RuntimeReceiver", "action ${intent?.action}, us ${isSuAvailable()}")
         intent?.let {
             when (it.action) {
                 KILL_AND_DISABLE -> {
@@ -102,5 +105,9 @@ class RuntimeReceiver : BroadcastReceiver() {
         }
     }
 
+    private fun isSuAvailable(): Boolean {
+        val paths = arrayOf("/system/bin/", "/system/xbin/", "/sbin/", "/vendor/bin/")
+        return paths.any { path -> File(path + "su").exists() }
+    }
 
 }

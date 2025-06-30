@@ -43,6 +43,7 @@ class InformationViewModel @Inject constructor(@ApplicationContext private val c
     fun forceStopClick() {
         Log.e("InformationViewModel", "forceStopClick")
         val intent = Intent(RuntimeReceiver.KILL_AND_DISABLE)
+        intent.setClass(context, RuntimeReceiver::class.java)
         intent.putExtra(RuntimeReceiver.PACKAGE_NAME, _appInfo.value?.packageName)
         context.sendBroadcast(intent)
     }
@@ -50,6 +51,7 @@ class InformationViewModel @Inject constructor(@ApplicationContext private val c
     fun uninstallClick() {
         Log.e("InformationViewModel", "uninstallClick")
         val intent = Intent(RuntimeReceiver.UNINSTALL_APP)
+        intent.setClass(context, RuntimeReceiver::class.java)
         intent.putExtra(RuntimeReceiver.PACKAGE_NAME, _appInfo.value?.packageName)
         context.sendBroadcast(intent)
     }
